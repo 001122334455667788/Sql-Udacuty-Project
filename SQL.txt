@@ -1,0 +1,56 @@
+/*set1 Question 3: Who is the best customer?*/
+SELECT Customer.CustomerId , sum(invoice.Total) AS TOTAL
+FROM Customer
+JOIN Invoice
+ON Customer.CustomerId = Invoice.CustomerId
+group by Customer.CustomerId
+ORDER BY TOTAL DESC
+LIMIT 10;
+
+
+/*SET 2*/
+/*Question 2: Who is writing the rock music?*/
+SELECT 
+ArtisT.ArtistId,Artist.Name,COUNT(Track.Name) as songs
+FROM Artist
+JOIN Album
+ON Artist.ArtistId= Album.ArtistId
+JOIN Track
+ON Track.AlbumId=Album.AlbumId
+JOIN Genre
+ON track.GenreId=Genre.GenreId
+WHERE GENRE.Name='Rock'
+GROUP BY Artist.Name
+ORDER BY 3 DESC 
+LIMIT 10;
+
+/*Question 3 First, find which artist has earned the most according to the InvoiceLines?*/
+SELECT Artist.Name,SUM(InvoiceLine.Quantity*InvoiceLine.UnitPrice) AS AmountSpent
+FROM InvoiceLine
+JOIN Track
+ON InvoiceLine.TrackId=Track.TrackId
+JOIN Album
+ON Track.AlbumId=Album.AlbumId
+JOIN Artist
+ON Artist.ArtistId= Album.ArtistId
+GROUP BY Artist.Name
+ORDER BY AmountSpent DESC
+LIMIT 5;
+
+/*set3 Question 3*/
+WITH t1 AS (
+	SELECT Customer.Country,sum(Invoice.Total) TotalSpent ,Customer.FirstName,Customer.LastName,Customer.CustomerId
+	FROM Invoice
+	JOIN Customer ON Customer.CustomerId=Invoice.CustomerId
+    GROUP BY Customer.CustomerId
+
+)
+SELECT t1.* FROM t1	
+JOIN(
+SELECT Max(TotalSpent) as maxtotal, Country,FirstName,LastName,CustomerId
+FROM t1
+GROUP BY Country
+)t2
+ON t1.Country = t2.Country
+WHERE t1.TotalSpent=t2.maxtotal
+ORDER BY Country;
